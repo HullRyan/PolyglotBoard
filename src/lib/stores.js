@@ -102,3 +102,48 @@ if (browser) {
         document.documentElement.setAttribute('data-theme', value);
     });
 }
+
+// Title Store
+function getInitialTitle() {
+    if (!browser) return 'Polyglot Board';
+
+    // 1. Try URL params first
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get('title');
+    if (title) {
+        try {
+            return decodeURIComponent(title);
+        } catch (e) {
+            console.error('Failed to parse title from URL', e);
+        }
+    }
+
+    // 2. Fallback to localStorage
+    const stored = localStorage.getItem('title');
+    if (stored) {
+        return stored;
+    }
+
+    // 3. Default
+    return 'Polyglot Board';
+}
+
+/** @type {import('svelte/store').Writable<string>} */
+export const title = writable(getInitialTitle());
+
+if (browser) {
+    title.subscribe((value) => {
+        localStorage.setItem('title', value);
+
+        // Update URL
+        const params = new URLSearchParams(window.location.search);
+        if (value === 'Polyglot Board') {
+            params.delete('title');
+        } else {
+            params.set('title', encodeURIComponent(value));
+        }
+
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState(null, '', newUrl);
+    });
+}

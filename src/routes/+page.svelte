@@ -1,5 +1,5 @@
 <script>
-    import { boxes, theme } from "$lib/stores";
+    import { boxes, theme, title } from "$lib/stores";
     import { dndzone } from "svelte-dnd-action";
     import { flip } from "svelte/animate";
     import ConfigModal from "../components/ConfigModal.svelte";
@@ -228,7 +228,16 @@
 
 <div class="container">
     <header>
-        <h1>Polyglot Board</h1>
+        {#if isEditMode}
+            <input
+                bind:value={$title}
+                class="title-input"
+                placeholder="Board Title"
+                aria-label="Board Title"
+            />
+        {:else}
+            <h1>{$title}</h1>
+        {/if}
         <div class="controls">
             <button
                 class="btn-icon"
@@ -386,13 +395,15 @@
     }
 
     .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 1.5rem;
         min-height: 200px;
     }
 
     .box {
+        width: 200px;
         aspect-ratio: 1;
         display: flex;
         flex-direction: column;
@@ -552,5 +563,23 @@
 
     .btn-sm:hover {
         background: rgba(255, 255, 255, 0.2);
+    }
+
+    .title-input {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid var(--accent-color);
+        color: var(--text-color);
+        width: 100%;
+        max-width: 500px;
+        padding: 0.25rem;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .title-input:focus {
+        border-bottom-color: var(--primary-color);
     }
 </style>

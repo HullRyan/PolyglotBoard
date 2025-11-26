@@ -1,28 +1,29 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
-    import { loadModel } from '$lib/utils/tts';
-    
-    export let box = { id: '', label: '', text: '', targetLang: 'es' };
+    import { createEventDispatcher } from "svelte";
+    import { loadModel } from "$lib/utils/tts";
+
+    export let box = { id: "", label: "", text: "", targetLang: "es" };
     export let isOpen = false;
 
     const dispatch = createEventDispatcher();
 
     const languages = [
-        { code: 'es', name: 'Spanish' },
-        { code: 'fr', name: 'French' },
-        { code: 'de', name: 'German' },
-        { code: 'it', name: 'Italian' },
-        { code: 'ja', name: 'Japanese' },
-        { code: 'ko', name: 'Korean' },
-        { code: 'zh-CN', name: 'Chinese (Simplified)' },
-        { code: 'ru', name: 'Russian' },
-        { code: 'pt', name: 'Portuguese' },
-        { code: 'nl', name: 'Dutch' }
+        { code: "es", name: "Spanish" },
+        { code: "fr", name: "French" },
+        { code: "de", name: "German" },
+        { code: "it", name: "Italian" },
+        { code: "ja", name: "Japanese" },
+        { code: "ko", name: "Korean" },
+        { code: "zh-CN", name: "Chinese (Simplified)" },
+        { code: "ru", name: "Russian" },
+        { code: "pt", name: "Portuguese" },
+        { code: "nl", name: "Dutch" },
     ];
 
     // Track if label was manually edited to avoid overwriting
     let labelManuallyEdited = false;
 
+    /** @param {any} e */
     function handleTextChange(e) {
         const newText = e.target.value;
         // If label hasn't been manually edited (or is empty/same as old text), update it
@@ -49,26 +50,47 @@
     }
 
     function save() {
-        dispatch('save', box);
+        dispatch("save", box);
         isOpen = false;
     }
 
     function close() {
-        dispatch('close');
+        dispatch("close");
         isOpen = false;
     }
 </script>
 
+<svelte:window
+    on:keydown={(e) => {
+        if (e.key === "Escape") close();
+    }}
+/>
+
 {#if isOpen}
-    <div class="modal-backdrop" on:click={close}>
-        <div class="modal glass-panel" on:click|stopPropagation>
+    <div
+        class="modal-backdrop"
+        on:click={close}
+        on:keydown={(e) => {
+            if (e.key === "Enter" || e.key === " ") close();
+        }}
+        role="button"
+        tabindex="0"
+    >
+        <div
+            class="modal glass-panel"
+            on:click|stopPropagation
+            on:keydown|stopPropagation
+            role="dialog"
+            aria-modal="true"
+            tabindex="-1"
+        >
             <h2>Configure Button</h2>
-            
+
             <div class="form-group">
                 <label for="text">Text to Translate/Speak</label>
-                <textarea 
-                    id="text" 
-                    bind:value={box.text} 
+                <textarea
+                    id="text"
+                    bind:value={box.text}
                     on:input={handleTextChange}
                     placeholder="Text to translate..."
                 ></textarea>
@@ -76,18 +98,22 @@
 
             <div class="form-group">
                 <label for="label">Label</label>
-                <input 
-                    id="label" 
-                    type="text" 
-                    bind:value={box.label} 
+                <input
+                    id="label"
+                    type="text"
+                    bind:value={box.label}
                     on:input={handleLabelChange}
-                    placeholder="e.g. Hello (Spanish)" 
+                    placeholder="e.g. Hello (Spanish)"
                 />
             </div>
 
             <div class="form-group">
                 <label for="lang">Target Language</label>
-                <select id="lang" bind:value={box.targetLang} on:change={handleLangChange}>
+                <select
+                    id="lang"
+                    bind:value={box.targetLang}
+                    on:change={handleLangChange}
+                >
                     {#each languages as lang}
                         <option value={lang.code}>{lang.name}</option>
                     {/each}
@@ -140,7 +166,9 @@
         color: var(--secondary-color);
     }
 
-    input, textarea, select {
+    input,
+    textarea,
+    select {
         width: 100%;
         padding: 0.75rem;
         border-radius: 0.5rem;
@@ -151,7 +179,9 @@
         box-sizing: border-box;
     }
 
-    input:focus, textarea:focus, select:focus {
+    input:focus,
+    textarea:focus,
+    select:focus {
         outline: none;
         border-color: var(--primary-color);
     }
