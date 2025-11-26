@@ -12,7 +12,7 @@ export async function translateText(text, targetLang, sourceLang = 'auto') {
         const data = await res.json();
         // data[0] contains an array of translated segments (sentences)
         // We need to join them all together
-        return data[0].map(item => item[0]).join('');
+        return data[0].map((/** @type {any} */ item) => item[0]).join('');
     } catch (e) {
         console.error('Translation failed', e);
         const errorMessage = e instanceof Error ? e.message : String(e);
